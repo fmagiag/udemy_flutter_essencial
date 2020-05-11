@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+
   final _tLogin = TextEditingController();
+
   final _tSenha = TextEditingController();
+
+  final _focusSenha = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +41,9 @@ class LoginPage extends StatelessWidget {
               "Digite o login",
               controller: _tLogin,
               validator: _validateLogin,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              nextFocus: _focusSenha,
             ),
             SizedBox(
               height: 10,
@@ -37,6 +54,8 @@ class LoginPage extends StatelessWidget {
               password: true,
               controller: _tSenha,
               validator: _validateSenha,
+              keyboardType: TextInputType.number,
+              focusNode: _focusSenha,
             ),
             SizedBox(
               height: 20,
@@ -54,11 +73,24 @@ class LoginPage extends StatelessWidget {
     bool password = false,
     TextEditingController controller,
     FormFieldValidator<String> validator,
+    TextInputType keyboardType,
+    TextInputAction textInputAction,
+    FocusNode focusNode,
+    FocusNode nextFocus,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: password,
       validator: validator,
+      keyboardType: keyboardType,
+      keyboardAppearance: Brightness.light,
+      textInputAction: textInputAction,
+      focusNode: focusNode,
+      onFieldSubmitted: (String text) {
+        if (nextFocus != null) {
+          FocusScope.of(context).requestFocus(_focusSenha);
+        }
+      },
       style: TextStyle(
         fontSize: 25,
         color: Colors.blue,
@@ -105,19 +137,24 @@ class LoginPage extends StatelessWidget {
   }
 
   String _validateLogin(String text) {
-      if (text.isEmpty) {
-        return "Digite o login";
-      }
-      return null;
+    if (text.isEmpty) {
+      return "Digite o login";
+    }
+    return null;
   }
 
   String _validateSenha(String text) {
     if (text.isEmpty) {
       return "Digite a Senha";
     }
-    if(text.length<3){
+    if (text.length < 3) {
       return "A senha precisa ter pelo menos 3 números";
     }
     return null;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
